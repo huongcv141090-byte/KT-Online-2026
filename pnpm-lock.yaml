@@ -7,13 +7,41 @@ settings:
 importers:
 
   .:
+    dependencies:
+      lucide-react:
+        specifier: ^1.16.0
+        version: 1.47.0(react@18.3.1)
+      next:
+        specifier: 14.2.0
+        version: 14.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18.3.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.0
+        version: 18.3.1(react@18.3.1)
     devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.43
+      '@types/react':
+        specifier: ^18.3.0
+        version: 18.3.31
+      autoprefixer:
+        specifier: ^10.4.0
+        version: 10.6.1(postcss@8.5.28)
       eslint:
         specifier: ^8.57.0
         version: 8.57.1
+      postcss:
+        specifier: ^8.4.0
+        version: 8.5.28
       prettier:
         specifier: ^3.2.0
         version: 3.9.8
+      tailwindcss:
+        specifier: ^3.4.0
+        version: 3.4.19(tsx@4.23.15)
       turbo:
         specifier: ^2.0.0
         version: 2.11.2
@@ -59,7 +87,7 @@ importers:
     devDependencies:
       '@nestjs/cli':
         specifier: ^10.0.0
-        version: 10.4.9
+        version: 10.4.9(postcss@8.5.28)
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.43
@@ -72,9 +100,6 @@ importers:
 
   apps/web:
     dependencies:
-      '@orh/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       lucide-react:
         specifier: ^1.47.0
         version: 1.47.0(react@18.3.1)
@@ -2657,7 +2682,7 @@ snapshots:
   '@msgpackr-extract/msgpackr-extract-win32-x64@3.0.4':
     optional: true
 
-  '@nestjs/cli@10.4.9':
+  '@nestjs/cli@10.4.9(postcss@8.5.28)':
     dependencies:
       '@angular-devkit/core': 17.3.11(chokidar@3.6.0)
       '@angular-devkit/schematics': 17.3.11(chokidar@3.6.0)
@@ -2667,7 +2692,7 @@ snapshots:
       chokidar: 3.6.0
       cli-table3: 0.6.5
       commander: 4.1.1
-      fork-ts-checker-webpack-plugin: 9.0.2(typescript@5.7.2)(webpack@5.97.1)
+      fork-ts-checker-webpack-plugin: 9.0.2(typescript@5.7.2)(webpack@5.97.1(postcss@8.5.28))
       glob: 10.4.5
       inquirer: 8.2.6
       node-emoji: 1.11.0
@@ -2676,7 +2701,7 @@ snapshots:
       tsconfig-paths: 4.2.0
       tsconfig-paths-webpack-plugin: 4.2.0
       typescript: 5.7.2
-      webpack: 5.97.1
+      webpack: 5.97.1(postcss@8.5.28)
       webpack-node-externals: 3.0.0
     transitivePeerDependencies:
       - '@minify-html/node'
@@ -3541,7 +3566,7 @@ snapshots:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
-  fork-ts-checker-webpack-plugin@9.0.2(typescript@5.7.2)(webpack@5.97.1):
+  fork-ts-checker-webpack-plugin@9.0.2(typescript@5.7.2)(webpack@5.97.1(postcss@8.5.28)):
     dependencies:
       '@babel/code-frame': 7.29.7
       chalk: 4.1.2
@@ -3556,7 +3581,7 @@ snapshots:
       semver: 7.8.5
       tapable: 2.3.3
       typescript: 5.7.2
-      webpack: 5.97.1
+      webpack: 5.97.1(postcss@8.5.28)
 
   forwarded@0.2.0: {}
 
@@ -4426,13 +4451,15 @@ snapshots:
 
   tapable@2.3.3: {}
 
-  terser-webpack-plugin@5.6.1(webpack@5.97.1):
+  terser-webpack-plugin@5.6.1(postcss@8.5.28)(webpack@5.97.1(postcss@8.5.28)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.5.0
       terser: 5.51.2
-      webpack: 5.97.1
+      webpack: 5.97.1(postcss@8.5.28)
+    optionalDependencies:
+      postcss: 8.5.28
 
   terser@5.51.2:
     dependencies:
@@ -4562,7 +4589,7 @@ snapshots:
 
   webpack-sources@3.5.1: {}
 
-  webpack@5.97.1:
+  webpack@5.97.1(postcss@8.5.28):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.9
@@ -4584,7 +4611,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.3.3
-      terser-webpack-plugin: 5.6.1(webpack@5.97.1)
+      terser-webpack-plugin: 5.6.1(postcss@8.5.28)(webpack@5.97.1(postcss@8.5.28))
       watchpack: 2.5.2
       webpack-sources: 3.5.1
     transitivePeerDependencies:
