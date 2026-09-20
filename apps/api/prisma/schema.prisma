@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Không lưu email đầy đủ — chỉ hash
+model User {
+  id          String    @id @default(cuid())
+  emailHash   String    @unique
+  displayName String
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+
+  workspaces  WorkspaceMember[]
+  consents    Consent[]
+
+  @@map("users")
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  ownerId   String
+  name      String
+  plan      String   @default("free") // free | pro | team
+  createdAt DateTime @default(now())
+
+  members     WorkspaceMember[]
+  connections Connection[]
+  contentItems ContentItem[]
+  jobs        Job[]
+  auditLogs   AuditLog[]
+
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  id          String    @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String    @default("member") // owner | admin | member
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([workspaceId, userId])
+  @@map("workspace_members")
+}
+
+// Token luôn mã hóa — KHÔNG lưu plaintext
+model Connection {
+  id                   String    @id @default(cuid())
+  workspaceId          String
+  provider             String    // google | facebook | instagram | tiktok | github
+  providerUserId       String
+  encryptedAccessToken String    // AES-256-GCM
+  encryptedRefreshToken String?
+  expiresAt            DateTime
+  scopesJson           String[]  // Đúng scope đã được consent
+  status               String    @default("active") // active | reauth_required | revoked | error
+  lastError            String?
+  createdAt            DateTime  @default(now())
+
+  workspace    Workspace @relation(fields: [workspaceId], references: [id])
+  jobs         Job[]
+
+  @@unique([workspaceId, provider, providerUserId])
+  @@map("connections")
+}
+
+// Consent PHẢI tồn tại trước khi gọi API bất kỳ
+model Consent {
+  id            String    @id @default(cuid())
+  userId        String
+  provider      String
+  purpose       String
+  scopesJson    String[]
+  policyVersion String    // CURRENT_POLICY_VERSION
+  grantedAt     DateTime  @default(now())
+  revokedAt     DateTime?
+  ipHash        String    // IP hash (không lưu IP đầy đủ)
+
+  user          User      @relation(fields: [userId], references: [id])
+
+  @@map("consents")
+}
+
+// Content item — phải approved trước khi publish
+model ContentItem {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  assetUrl       String?
+  caption        String
+  scheduledAt    DateTime?
+  status         String   @default("draft") // draft | pending_approval | approved | published | failed
+  approvalStatus String   @default("pending") // pending | approved | rejected
+  createdAt      DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  jobs      Job[]
+
+  @@map("content_items")
+}
+
+// Job queue (BullMQ làm scheduler; bảng này là source of truth)
+model Job {
+  id              String   @id @default(cuid())
+  connectionId    String
+  contentItemId   String?
+  idempotencyKey  String   @unique // ngăn duplicate publish
+  attempts        Int      @default(0)
+  status          String   @default("pending") // pending | running | done | failed | dead_letter
+  nextRunAt       DateTime?
+  lastError       String?
+  workspaceId     String
+
+  connection    Connection  @relation(fields: [connectionId], references: [id])
+  contentItem   ContentItem? @relation(fields: [contentItemId], references: [id])
+  workspace     Workspace    @relation(fields: [workspaceId], references: [id])
+
+  @@map("jobs")
+}
+
+// Immutable audit log — KHÔNG chứa secret
+model AuditLog {
+  id          String   @id @default(cuid())
+  workspaceId String
+  actorId     String
+  action      String   // consent_granted | token_refreshed | content_published | account_deleted ...
+  provider    String?
+  targetId    String?
+  result      String   // success | failure
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+
+  @@map("audit_logs")
+}

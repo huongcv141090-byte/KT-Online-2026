@@ -1,0 +1,11 @@
+{
+  "name": "@orh/connectors",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@orh/shared": "workspace:*",
+    "@orh/auth": "workspace:*",
+    "@orh/crypto": "workspace:*"
+  }
+}
