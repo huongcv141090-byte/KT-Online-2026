@@ -17,6 +17,8 @@ import {
   Clock
 } from 'lucide-react'
 
+import { useSession } from '../context/SessionContext'
+
 interface ReActStep {
   type: 'thought' | 'action' | 'observation' | 'answer'
   title: string
@@ -24,6 +26,7 @@ interface ReActStep {
 }
 
 export function AICopilotStudio() {
+  const { sessionData, setCampaign, runManualStep } = useSession()
   const [prompt, setPrompt] = useState('')
   const [selectedModel, setSelectedModel] = useState('Gemini 1.5 Pro')
   const [isGenerating, setIsGenerating] = useState(false)
@@ -169,9 +172,10 @@ Bí quyết âm thanh triệu view dù quay ngoài đường ồn ào! 🎙️�
           <Sparkles className="w-3.5 h-3.5 text-brand-emerald" /> Gợi ý nhanh:
         </span>
         {[
+          '🔥 [Phiên #1] Kịch bản TikTok 60s bán Notion AI & Workflow Kit',
           'Kịch bản TikTok Review Mic Thu Âm chuyển đổi cao',
           'Viết bài so sánh Top 3 thẻ tín dụng hoàn tiền hoa hồng 800k',
-          'Kịch bản Reels 30s bán khóa học AI & Notion template',
+          'Kịch bản Reels 30s bán template Notion tự động hóa',
           'Kiểm tra ToS bài đăng affiliate tránh bị bóp reach',
         ].map((item, idx) => (
           <button
@@ -269,13 +273,23 @@ Bí quyết âm thanh triệu view dù quay ngoài đường ồn ào! 🎙️�
                 </div>
 
                 {isAnswer && (
-                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-3">
+                  <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center gap-3">
+                    <button
+                      onClick={() => {
+                        setCampaign({ scriptContent: step.content })
+                        runManualStep(3)
+                      }}
+                      className="px-3.5 py-1.5 rounded-lg bg-brand-emerald text-dark-950 text-xs font-bold flex items-center gap-1.5 shadow-glow-emerald hover:opacity-90 transition-all"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Nạp Vào Kịch Bản Phiên #1</span>
+                    </button>
                     <a
                       href="/content"
                       className="px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/10 transition-all"
                     >
                       <CalendarPlus className="w-3.5 h-3.5 text-brand-emerald" />
-                      <span>Đưa vào Content Studio Lên Lịch</span>
+                      <span>Đưa vào Content Studio</span>
                     </a>
                     <span className="text-[11px] text-slate-400 flex items-center gap-1 font-mono">
                       <ShieldCheck className="w-3.5 h-3.5 text-brand-cyan" />

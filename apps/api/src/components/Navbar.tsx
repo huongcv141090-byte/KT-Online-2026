@@ -14,8 +14,11 @@ import {
   DollarSign
 } from 'lucide-react'
 
+import { useSession } from '../context/SessionContext'
+
 export function Navbar() {
   const pathname = usePathname()
+  const { revenue, isAutoPilotRunning } = useSession()
 
   const navItems = [
     { href: '/', label: 'Tổng quan', icon: LayoutDashboard },
@@ -84,7 +87,7 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-emerald/10 border border-brand-emerald/25 text-brand-emerald text-xs font-semibold">
             <DollarSign className="w-3.5 h-3.5 animate-pulse" />
-            <span>Tháng này: <strong className="text-white">34.850.000₫</strong></span>
+            <span>Doanh thu: <strong className="text-white">{revenue.toLocaleString('vi-VN')}₫</strong></span>
           </div>
 
           <div className="flex items-center gap-2.5 pl-2 border-l border-white/10">
@@ -92,13 +95,13 @@ export function Navbar() {
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-brand-indigo to-brand-violet flex items-center justify-center font-bold text-xs text-white border border-white/20">
                 AI
               </div>
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-brand-emerald ring-2 ring-dark-950"></span>
+              <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full ring-2 ring-dark-950 ${isAutoPilotRunning ? 'bg-brand-cyan animate-ping' : 'bg-brand-emerald'}`}></span>
             </div>
             <div className="hidden md:block text-left">
               <p className="text-xs font-semibold text-white">Creator Space</p>
               <p className="text-[10px] text-brand-emerald flex items-center gap-1 font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-emerald animate-ping inline-block"></span>
-                WeKnora Core: Active
+                <span className={`w-1.5 h-1.5 rounded-full inline-block ${isAutoPilotRunning ? 'bg-brand-cyan animate-ping' : 'bg-brand-emerald'}`}></span>
+                {isAutoPilotRunning ? 'Auto-Pilot: Đang chạy' : 'Phiên 1: Sẵn sàng'}
               </p>
             </div>
           </div>

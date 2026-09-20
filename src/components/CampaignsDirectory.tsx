@@ -13,6 +13,7 @@ import {
   Layers,
   Award
 } from 'lucide-react'
+import { useSession } from '../context/SessionContext'
 
 export interface Campaign {
   id: string
@@ -91,6 +92,7 @@ const CAMPAIGNS: Campaign[] = [
 ]
 
 export function CampaignsDirectory() {
+  const { setCampaign, runManualStep } = useSession()
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -204,7 +206,26 @@ export function CampaignsDirectory() {
                 <span>Viết Kịch Bản Bán Hàng</span>
               </a>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                <button
+                  onClick={() => {
+                    setCampaign({
+                      campaignName: campaign.title,
+                      niche: campaign.category,
+                      targetProduct: campaign.title,
+                      commissionRate: campaign.commission,
+                      commissionPerSale: parseInt(campaign.commission.replace(/\D/g, '')) || 240000,
+                      utmLink: `${campaign.affiliateUrl}&utm_source=orh_auto&utm_campaign=session_01`
+                    })
+                    runManualStep(1)
+                  }}
+                  className="px-2.5 py-1.5 rounded-lg bg-brand-emerald/15 hover:bg-brand-emerald/25 text-brand-emerald text-xs font-bold border border-brand-emerald/30 transition-all flex items-center gap-1"
+                  title="Đặt chiến dịch này làm mục tiêu chính cho Phiên kiếm tiền #1"
+                >
+                  <Award className="w-3.5 h-3.5" />
+                  <span>Chọn Phiên #1</span>
+                </button>
+
                 <button
                   onClick={() => handleCopyLink(campaign.id, campaign.affiliateUrl)}
                   className="px-3 py-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-200 text-xs font-medium border border-white/10 flex items-center gap-1.5 transition-all"

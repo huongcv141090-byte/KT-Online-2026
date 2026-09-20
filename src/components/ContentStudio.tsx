@@ -28,47 +28,39 @@ export interface ContentItem {
   commission: string
 }
 
-const INITIAL_POSTS: ContentItem[] = [
-  {
-    id: 'cnt_1',
-    title: 'Review Mic Thu Âm K9 Pro Chống Ồn Quán Cafe',
-    caption: 'Thử thách âm thanh ồn ào! 🎙️ Bật mic lên là êm ru. Giảm 30% tại giỏ hàng TikTok! #ReviewCongNghe #MicThuAm #ShopeeAffiliate',
-    channels: ['tiktok', 'instagram'],
-    scheduledAt: '2026-09-22 19:30',
-    status: 'approved',
-    affiliateProduct: 'Mic Không Dây K9 Pro',
-    commission: '15% (45.000₫/đơn)',
-  },
-  {
-    id: 'cnt_2',
-    title: 'Top 3 Sai Lầm Mở Thẻ Tín Dụng Hoàn Tiền Sinh Viên',
-    caption: 'Mở thẻ số VPBank nhận ngay 800k tiền mặt + miễn phí thường niên. Đăng ký link trong bio! #KiemTienOnline #FintechVN #AccessTrade',
-    channels: ['meta', 'youtube'],
-    scheduledAt: '2026-09-23 11:45',
-    status: 'pending_approval',
-    affiliateProduct: 'Thẻ Tín Dụng VPBank SuperCash',
-    commission: '850.000₫/thẻ duyệt',
-  },
-  {
-    id: 'cnt_3',
-    title: 'Hướng Dẫn Dùng AI Tự Động Hóa Quản Lý Công Việc',
-    caption: 'Bí kíp nhân bản năng suất x5 lần với Notion AI Template. Nhận miễn phí mẫu template tại link bio! #NotionAI #NangSuat #FreelancerVN',
-    channels: ['instagram', 'youtube'],
-    scheduledAt: '2026-09-24 08:00',
-    status: 'draft',
-    affiliateProduct: 'Gói Notion Ultimate Workspace',
-    commission: '40% (240.000₫/bản)',
-  },
-]
+import { useSession } from '../context/SessionContext'
+import Link from 'next/link'
 
 export function ContentStudio() {
-  const [posts, setPosts] = useState<ContentItem[]>(INITIAL_POSTS)
+  const { sessionData, currentStep, startAutoPilot } = useSession()
+
+  const [posts, setPosts] = useState<ContentItem[]>([])
   const [activeFilter, setActiveFilter] = useState<string>('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newTitle, setNewTitle] = useState('')
   const [newCaption, setNewCaption] = useState('')
   const [newProduct, setNewProduct] = useState('')
   const [newScheduled, setNewScheduled] = useState('2026-09-25 19:00')
+
+  // Auto-inject Session #1 content when step >= 2
+  React.useEffect(() => {
+    if (sessionData.scriptContent) {
+      setPosts([
+        {
+          id: 'session_1_post',
+          title: `Phiên #1: ${sessionData.campaignName}`,
+          caption: sessionData.scriptContent,
+          channels: ['tiktok', 'instagram', 'youtube'],
+          scheduledAt: sessionData.scheduledTime,
+          status: currentStep >= 4 ? 'approved' : 'pending_approval',
+          affiliateProduct: sessionData.targetProduct,
+          commission: `${sessionData.commissionRate} (+${sessionData.commissionPerSale.toLocaleString('vi-VN')}₫/đơn)`,
+        }
+      ])
+    } else {
+      setPosts([])
+    }
+  }, [sessionData.scriptContent, sessionData.campaignName, sessionData.scheduledTime, sessionData.targetProduct, sessionData.commissionRate, sessionData.commissionPerSale, currentStep])
 
   const handleApprove = (id: string) => {
     setPosts((prev) =>
@@ -172,7 +164,25 @@ export function ContentStudio() {
 
       {/* Post List */}
       <div className="space-y-4">
-        {filteredPosts.map((post) => {
+        {filteredPosts.length === 0 ? (
+          <div className="glass-panel rounded-2xl p-10 border border-white/10 text-center space-y-4">
+            <Sparkles className="w-10 h-10 text-brand-emerald mx-auto animate-pulse" />
+            <div className="max-w-md mx-auto space-y-1.5">
+              <h4 className="text-base font-bold text-white">Chưa có bài viết trong hàng đợi</h4>
+              <p className="text-xs text-slate-400">
+                Toàn bộ dữ liệu ảo đã được reset về 0₫. Hãy kích hoạt Auto-Pilot Phiên #1 để WeKnora Agent tự động sáng tạo kịch bản và đưa vào đây!
+              </p>
+            </div>
+            <button
+              onClick={startAutoPilot}
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-emerald to-brand-cyan text-dark-950 font-bold text-xs shadow-glow-emerald hover:opacity-95 transition-all inline-flex items-center gap-2"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Kích Hoạt Auto-Pilot Phiên #1 Ngay</span>
+            </button>
+          </div>
+        ) : (
+          filteredPosts.map((post) => {
           const statusBadge =
             post.status === 'published'
               ? { bg: 'bg-brand-emerald/20 text-brand-emerald border-brand-emerald/30', label: 'ĐÃ XUẤT BẢN' }
@@ -254,7 +264,8 @@ export function ContentStudio() {
               </div>
             </div>
           )
-        })}
+        })
+        )}
       </div>
 
       {/* Simple Modal Create */}

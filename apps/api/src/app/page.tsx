@@ -20,28 +20,32 @@ import {
   Lock
 } from 'lucide-react'
 import { InteractiveKnowledgeGraph } from '../components/InteractiveKnowledgeGraph'
+import { AutoEarningWizard } from '../components/AutoEarningWizard'
+import { useSession } from '../context/SessionContext'
 
 export default function HomePage() {
+  const { revenue, orders, reach, accountHealth, channels, isAutoPilotRunning } = useSession()
+
   const kpiCards = [
     {
-      title: 'Thu Nhập Tháng Này',
-      value: '34.850.000₫',
-      subValue: '+28.4% so với tháng trước',
+      title: 'Thu Nhập Thực Tế',
+      value: `${revenue.toLocaleString('vi-VN')}₫`,
+      subValue: isAutoPilotRunning ? 'Đang tự động tích lũy...' : 'Sẵn sàng kích hoạt phiên 1',
       icon: DollarSign,
       color: 'from-brand-emerald to-emerald-400',
       textColor: 'text-brand-emerald',
     },
     {
       title: 'Đơn Hàng Tiếp Thị (Conversions)',
-      value: '428 đơn',
-      subValue: 'Tỷ lệ chuyển đổi 11.2%',
+      value: `${orders} đơn`,
+      subValue: orders > 0 ? 'Chốt đơn tự động' : 'Chờ chuyển đổi đầu tiên',
       icon: TrendingUp,
       color: 'from-brand-cyan to-cyan-400',
       textColor: 'text-brand-cyan',
     },
     {
       title: 'Lượt Xem Đa Kênh (Reach)',
-      value: '1.240.000',
+      value: reach.toLocaleString('vi-VN'),
       subValue: 'TikTok, Reels, Shorts',
       icon: Eye,
       color: 'from-brand-violet to-violet-400',
@@ -49,19 +53,12 @@ export default function HomePage() {
     },
     {
       title: 'Chỉ Số Bảo Vệ Tài Khoản (ToS)',
-      value: '100 / 100',
+      value: `${accountHealth} / 100`,
       subValue: '0 vi phạm, 100% AES mã hóa',
       icon: ShieldCheck,
       color: 'from-brand-indigo to-indigo-400',
       textColor: 'text-brand-indigo',
     },
-  ]
-
-  const channelsData = [
-    { name: 'TikTok Shop Partner', revenue: '16.400.000₫', orders: 198, growth: '+34%' },
-    { name: 'Shopee Affiliate VN', revenue: '9.850.000₫', orders: 142, growth: '+18%' },
-    { name: 'AccessTrade Fintech (D2C)', revenue: '6.200.000₫', orders: 8, growth: '+45%' },
-    { name: 'Amazon Associates (USD)', revenue: '2.400.000₫', orders: 80, growth: '+8%' },
   ]
 
   return (
@@ -143,6 +140,9 @@ export default function HomePage() {
         })}
       </div>
 
+      {/* Core Auto-Pilot Earning Wizard (A-Z) */}
+      <AutoEarningWizard />
+
       {/* Central Interactive Knowledge Graph Showcase */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -180,7 +180,7 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-2.5">
-            {channelsData.map((channel, idx) => (
+            {channels.map((channel, idx) => (
               <div
                 key={idx}
                 className="p-3.5 rounded-xl bg-dark-950/70 border border-white/5 flex items-center justify-between hover:bg-dark-900/80 transition-all"
@@ -190,7 +190,9 @@ export default function HomePage() {
                   <p className="text-[11px] text-slate-400 mt-0.5">{channel.orders} đơn hoàn tất</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-extrabold text-brand-emerald block">{channel.revenue}</span>
+                  <span className="text-xs font-extrabold text-brand-emerald block">
+                    {channel.revenue.toLocaleString('vi-VN')}₫
+                  </span>
                   <span className="text-[10px] text-brand-cyan font-mono">{channel.growth}</span>
                 </div>
               </div>
