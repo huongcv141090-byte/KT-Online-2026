@@ -14,3 +14,4 @@ backup_*.sql
 *.key
 .DS_Store
 coverage/
+pnpm-lock.yaml
